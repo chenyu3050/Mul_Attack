@@ -11,3 +11,6 @@
     - clean.sh
   - mul_attack.py
   - README.md
+ #### 代码执行说明：
+ ./scripts/clean.sh 即可删除output文件夹
+ 
