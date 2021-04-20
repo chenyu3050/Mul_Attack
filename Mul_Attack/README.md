@@ -1,4 +1,4 @@
-### base on invert mul_attack og dlg
+### base on invert mul_attack  dlg
 
 #### dir as following:
 - MUL_ATTACK:
