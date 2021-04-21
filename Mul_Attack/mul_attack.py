@@ -57,15 +57,15 @@ def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_up
                                                                    use_updates=use_updates)
     input_parameters = [p.detach() for p in input_parameters]
 
-    config = dict(signed=True,
-              boxed=True,
-              cost_fn='sim',
-              indices='def',
-              weights='equal',
-              lr=0.1,
-              optim='adam',
+    config = dict(signed=True, # 符号
+              boxed=True,      # 盒约束 
+              cost_fn='sim',   # 损失函数
+              indices='def',   # 未知 
+              weights='equal', # 初始化等权重
+              lr=0.1,          # 梯度下降的学习率
+              optim='adam',    # 优化方法的选择
               restarts=1,
-              max_iterations=200,
+              max_iterations=200, # 迭代的轮次
               total_variation=1e-6,
               init='randn',
               filter='none',

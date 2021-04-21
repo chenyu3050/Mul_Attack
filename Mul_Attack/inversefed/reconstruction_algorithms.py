@@ -51,13 +51,13 @@ class GradientReconstructor():
         self.setup = dict(device=next(model.parameters()).device, dtype=next(model.parameters()).dtype)
 
         self.mean_std = mean_std
-        self.num_images = num_images
+        self.num_images = num_images 
 
         if self.config['scoring_choice'] == 'inception':
             self.inception = InceptionScore(batch_size=1, setup=self.setup)
 
-        self.loss_fn = torch.nn.CrossEntropyLoss(reduction='mean')
-        self.iDLG = True
+        self.loss_fn = torch.nn.CrossEntropyLoss(reduction='mean') # 使用交叉熵
+        self.iDLG = True # 默认使用iDLG来做
 
     def reconstruct(self, input_data, labels, img_shape=(3, 32, 32), dryrun=False, eval=True, tol=None):
         """Reconstruct image from gradient."""
