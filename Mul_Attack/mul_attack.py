@@ -82,7 +82,7 @@ def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_up
     plot(output,'adv')  
 
 # show ground truth  however the figure quailty is not good 
-def show_groundtruth(num_images)->None:
+def show_groundtruth(num_images)->tuple:
     
     ground_truth, labels = [], []
     idx = 25 # choosen randomly ... just whatever you want
