@@ -44,11 +44,10 @@ def plot(tensor):
         return plt.show(tensor[0].permute(1, 2, 0).cpu())
     else:
         fig, axes = plt.subplots(1, tensor.shape[0], figsize=(12, tensor.shape[0]*12)) # 子画布是1*batchsize的模式画图
-        plt.savefig('output/batch_{}.jpg'.format(tensor.shape[0]))
         for i, im in enumerate(tensor):
             axes[i].imshow(im.permute(1, 2, 0).cpu())
-            #axes[i].save_image('output/{}.jpg'.format(i))
-        
+        plt.savefig('output/batch_{}.jpg'.format(tensor.shape[0]))
+
 
 # show batch attack effect 
 
@@ -76,7 +75,7 @@ def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_up
               scoring_choice='loss')
 
     rec_machine = inversefed.FedAvgReconstructor(model, (dm, ds), local_steps, local_lr, config,
-                                                use_updates=use_updates)
+                                                use_updates=use_updates,num_images=2) # fix by alex 
     output, stats = rec_machine.reconstruct(input_parameters, labels, img_shape=(3, 32, 32))
 
     test_mse = (output.detach() - ground_truth).pow(2).mean() # 做差平方 符合DLG的思路 
