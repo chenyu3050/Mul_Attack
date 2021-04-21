@@ -35,9 +35,7 @@ def mul_attack(local_lr:float,local_steps:int,use_updates:bool,dm,ds,arch,traine
     model.eval()
     ground_truth,labels=show_groundtruth(num_images)
     batch_attack(model,ground_truth,labels,local_lr,local_steps,use_updates,dm,ds)
-
-
-def plot(tensor):
+def plot(tensor,name:str):
     tensor = tensor.clone().detach()
     tensor.mul_(ds).add_(dm).clamp_(0, 1)
     if tensor.shape[0] == 1: # shape[0]=batch_size
@@ -46,7 +44,7 @@ def plot(tensor):
         fig, axes = plt.subplots(1, tensor.shape[0], figsize=(12, tensor.shape[0]*12)) # 子画布是1*batchsize的模式画图
         for i, im in enumerate(tensor):
             axes[i].imshow(im.permute(1, 2, 0).cpu())
-        plt.savefig('output/batch_{}.jpg'.format(tensor.shape[0]))
+        plt.savefig('output/'+name+'_batch_{}.jpg'.format(tensor.shape[0]))
 
 
 # show batch attack effect 
@@ -81,8 +79,7 @@ def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_up
     test_mse = (output.detach() - ground_truth).pow(2).mean() # 做差平方 符合DLG的思路 
     feat_mse = (model(output.detach())- model(ground_truth)).pow(2).mean()  
     test_psnr = inversefed.metrics.psnr(output, ground_truth, factor=1/ds)
-    #print(type(output))
-    plot(output)  
+    plot(output,'adv')  
 
 # show ground truth  however the figure quailty is not good 
 def show_groundtruth(num_images)->None:
@@ -97,11 +94,8 @@ def show_groundtruth(num_images)->None:
             ground_truth.append(img.to(**setup))
     ground_truth = torch.stack(ground_truth)
     labels = torch.cat(labels)
-    #tensor_image=ground_truth
-    #print(type(ground_truth),np.shape(ground_truth)) 2,3,32,32
-    #tensor_image = tensor_image.view(tensor_image.shape[2], tensor_image.shape[3], tensor_image.shape[1],tensor_image[0])
-    #plt.imshow(tensor_image)
-    plot(ground_truth) # 研究如何imshow
+    plot(ground_truth,'origin')
+
     return ground_truth,labels
 
 def mkdir():
@@ -109,7 +103,7 @@ def mkdir():
     file_path = os.getcwd() #获得当前工作目录
 
     if os.path.exists(file_path + "\output"):
-        print("输入文件（文件夹）存在")
+        print("output已存在")
     else:
         os.makedirs(file_path + "\output")
 if __name__ == "__main__":
