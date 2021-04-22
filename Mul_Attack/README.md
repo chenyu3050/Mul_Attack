@@ -1,4 +1,4 @@
-### base on invert mul_attack  of dlg
+### base on invert mul_attack  of dlg hope to improve dlg
 
 #### dir as following:
 - MUL_ATTACK:
