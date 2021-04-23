@@ -34,7 +34,7 @@ def mul_attack(local_lr:float,local_steps:int,use_updates:bool,dm,ds,arch,traine
             torch.save(model.state_dict(), f'models/{file}')
     model.eval()
     ground_truth,labels=show_groundtruth(num_images)
-    batch_attack(model,ground_truth,labels,local_lr,local_steps,use_updates,dm,ds)
+    batch_attack(model,ground_truth,labels,local_lr,local_steps,use_updates,dm,ds,num_images)
 def plot(tensor,name:str):
     tensor = tensor.clone().detach()
     tensor.mul_(ds).add_(dm).clamp_(0, 1)
@@ -49,7 +49,7 @@ def plot(tensor,name:str):
 
 # show batch attack effect 
 
-def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_updates:bool,dm,ds)->None: 
+def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_updates:bool,dm,ds,num_images:int)->None: 
     model.zero_grad()
     target_loss, _, _ = loss_fn(model(ground_truth), labels)
     input_parameters = inversefed.reconstruction_algorithms.loss_steps(model, ground_truth, labels, 
@@ -73,7 +73,7 @@ def batch_attack(model,ground_truth,labels,local_lr:float,local_steps:int,use_up
               scoring_choice='loss')
 
     rec_machine = inversefed.FedAvgReconstructor(model, (dm, ds), local_steps, local_lr, config,
-                                                use_updates=use_updates,num_images=2) # fix by alex 
+                                                use_updates=use_updates,num_images=num_images) # fix by alex 
     output, stats = rec_machine.reconstruct(input_parameters, labels, img_shape=(3, 32, 32))
 
     test_mse = (output.detach() - ground_truth).pow(2).mean() # 做差平方 符合DLG的思路 
@@ -114,4 +114,4 @@ if __name__ == "__main__":
     dm = torch.as_tensor(inversefed.consts.cifar10_mean, **setup)[:, None, None]
     ds = torch.as_tensor(inversefed.consts.cifar10_std, **setup)[:, None, None]
     # mul_attack
-    mul_attack(local_lr=0.01,local_steps=4,use_updates=True,dm=dm,ds=ds,arch="ResNet20",trained_model=False,num_images=2)
+    mul_attack(local_lr=0.01,local_steps=4,use_updates=True,dm=dm,ds=ds,arch="ResNet20",trained_model=False,num_images=2) # 修改图片数量
